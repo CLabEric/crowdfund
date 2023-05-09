@@ -28,7 +28,7 @@ contract CrowdFund {
     mapping(address => uint256) public balances;
 
     event Pledged(address indexed, uint256 indexed);
-    event GoalAchieved(string indexed, uint256 indexed);
+    event GoalAchieved(string, uint256);
 
     modifier onlyOwner() {
         _checkOwner();
@@ -74,7 +74,6 @@ contract CrowdFund {
     }
 
     function getFundsBack() external campaignOver {
-        require(block.timestamp >= campaignDeadline, "Campaign still live.");
         require(!goalAchieved, "Campaign was sucessful. Only owner can retrieve funds.");
         uint256 balance = balances[msg.sender];
         balances[msg.sender] = 0;
@@ -84,7 +83,6 @@ contract CrowdFund {
     }
 
     function withdraw() public onlyOwner campaignOver {
-        require(block.timestamp >= campaignDeadline, "Campaign still live.");
         require(goalAchieved, "Campaign unsuccessful. Those who pledged can withdraw their funds");
 
         bool success = cheapCoin.transfer(owner, tokensRaised);
